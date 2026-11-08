@@ -1,0 +1,13 @@
+host,bond,vlan,ip,mask,gateway,mtu,tagging,default_route,description
+demo-alpha,bond7,171,192.0.2.2,255.255.255.248,192.0.2.1,1500,tagged,yes,Sample access network
+demo-alpha,bond7,272,198.51.100.66,255.255.255.248,198.51.100.65,9000,tagged,no,Sample data network
+demo-alpha,bond8,373,203.0.113.130,255.255.255.248,203.0.113.129,1500,untagged,no,Sample native network
+demo-alpha,bond7,474,192.0.2.198,255.255.255.240,192.0.2.193,1500,tagged,no,Sample application network
+demo-beta,bond7,171,192.0.2.3,255.255.255.248,192.0.2.1,1500,tagged,yes,Sample access network
+demo-beta,bond7,272,198.51.100.67,255.255.255.248,198.51.100.65,9000,tagged,no,Sample data network
+demo-beta,bond8,373,203.0.113.131,255.255.255.248,203.0.113.129,1500,untagged,no,Sample native network
+demo-beta,bond7,474,192.0.2.199,255.255.255.240,192.0.2.193,1500,tagged,no,Sample application network
+demo-gamma,bond7,171,192.0.2.4,255.255.255.248,192.0.2.1,1500,tagged,yes,Sample access network
+demo-gamma,bond7,272,198.51.100.68,255.255.255.248,198.51.100.65,9000,tagged,no,Sample data network
+demo-gamma,bond8,373,203.0.113.132,255.255.255.248,203.0.113.129,1500,untagged,no,Sample native network
+demo-gamma,bond7,474,192.0.2.200,255.255.255.240,192.0.2.193,1500,tagged,no,Sample application network

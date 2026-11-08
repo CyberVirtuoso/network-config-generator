@@ -1,0 +1,7 @@
+host,bond,slaves,mtu
+demo-alpha,bond7,enp5s0f0 enp5s0f1,9000
+demo-alpha,bond8,enp6s0f0 enp6s0f1,1500
+demo-beta,bond7,enp5s0f0 enp5s0f1,9000
+demo-beta,bond8,enp6s0f0 enp6s0f1,1500
+demo-gamma,bond7,enp5s0f0 enp5s0f1,9000
+demo-gamma,bond8,enp6s0f0 enp6s0f1,1500

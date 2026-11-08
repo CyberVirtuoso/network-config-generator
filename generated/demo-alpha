@@ -1,0 +1,132 @@
+# /etc/network/interfaces: создан generate_interfaces.py
+# Сервер: demo-alpha
+# Маршрутизация: IP источника -> tabel<VLAN>, прямой маршрут + шлюз VLAN.
+# Основной default route: VLAN 171 (192.0.2.1).
+source /etc/network/interfaces.d/*
+
+auto lo
+iface lo inet loopback
+
+# ---------- bond7: LACP (enp5s0f0, enp5s0f1) ----------
+auto enp5s0f0
+iface enp5s0f0 inet manual
+    mtu 9000
+
+auto enp5s0f1
+iface enp5s0f1 inet manual
+    mtu 9000
+
+auto bond7
+iface bond7 inet manual
+    pre-up modprobe bonding
+    bond-mode 802.3ad
+    bond-miimon 100
+    bond-downdelay 200
+    bond-updelay 200
+    bond-xmit-hash-policy layer3+4
+    bond-slaves enp5s0f0 enp5s0f1
+    mtu 9000
+
+# ---------- VLAN 171 (tagged): Sample access network ----------
+auto bond7.171
+iface bond7.171 inet manual
+    vlan-raw-device bond7
+    mtu 1500
+
+auto br171
+iface br171 inet static
+    bridge_ports bond7.171
+    bridge_stp off
+    bridge_fd 0
+    mtu 1500
+    address 192.0.2.2
+    netmask 255.255.255.248
+    gateway 192.0.2.1
+    post-up ip route replace 192.0.2.0/29 dev br171 scope link src 192.0.2.2 table tabel171
+    post-up ip route replace default via 192.0.2.1 dev br171 table tabel171
+    post-up ip rule del pref 10171 from 192.0.2.2/32 lookup tabel171 2>/dev/null || true
+    post-up ip rule add pref 10171 from 192.0.2.2/32 lookup tabel171
+    pre-down ip rule del pref 10171 from 192.0.2.2/32 lookup tabel171 2>/dev/null || true
+    pre-down ip route del default via 192.0.2.1 dev br171 table tabel171 2>/dev/null || true
+    pre-down ip route del 192.0.2.0/29 dev br171 table tabel171 2>/dev/null || true
+
+# ---------- VLAN 272 (tagged): Sample data network ----------
+auto bond7.272
+iface bond7.272 inet manual
+    vlan-raw-device bond7
+    mtu 9000
+
+auto br272
+iface br272 inet static
+    bridge_ports bond7.272
+    bridge_stp off
+    bridge_fd 0
+    mtu 9000
+    address 198.51.100.66
+    netmask 255.255.255.248
+    post-up ip route replace 198.51.100.64/29 dev br272 scope link src 198.51.100.66 table tabel272
+    post-up ip route replace default via 198.51.100.65 dev br272 table tabel272
+    post-up ip rule del pref 10272 from 198.51.100.66/32 lookup tabel272 2>/dev/null || true
+    post-up ip rule add pref 10272 from 198.51.100.66/32 lookup tabel272
+    pre-down ip rule del pref 10272 from 198.51.100.66/32 lookup tabel272 2>/dev/null || true
+    pre-down ip route del default via 198.51.100.65 dev br272 table tabel272 2>/dev/null || true
+    pre-down ip route del 198.51.100.64/29 dev br272 table tabel272 2>/dev/null || true
+
+# ---------- VLAN 474 (tagged): Sample application network ----------
+auto bond7.474
+iface bond7.474 inet manual
+    vlan-raw-device bond7
+    mtu 1500
+
+auto br474
+iface br474 inet static
+    bridge_ports bond7.474
+    bridge_stp off
+    bridge_fd 0
+    mtu 1500
+    address 192.0.2.198
+    netmask 255.255.255.240
+    post-up ip route replace 192.0.2.192/28 dev br474 scope link src 192.0.2.198 table tabel474
+    post-up ip route replace default via 192.0.2.193 dev br474 table tabel474
+    post-up ip rule del pref 10474 from 192.0.2.198/32 lookup tabel474 2>/dev/null || true
+    post-up ip rule add pref 10474 from 192.0.2.198/32 lookup tabel474
+    pre-down ip rule del pref 10474 from 192.0.2.198/32 lookup tabel474 2>/dev/null || true
+    pre-down ip route del default via 192.0.2.193 dev br474 table tabel474 2>/dev/null || true
+    pre-down ip route del 192.0.2.192/28 dev br474 table tabel474 2>/dev/null || true
+
+# ---------- bond8: LACP (enp6s0f0, enp6s0f1) ----------
+auto enp6s0f0
+iface enp6s0f0 inet manual
+    mtu 1500
+
+auto enp6s0f1
+iface enp6s0f1 inet manual
+    mtu 1500
+
+auto bond8
+iface bond8 inet manual
+    pre-up modprobe bonding
+    bond-mode 802.3ad
+    bond-miimon 100
+    bond-downdelay 200
+    bond-updelay 200
+    bond-xmit-hash-policy layer3+4
+    bond-slaves enp6s0f0 enp6s0f1
+    mtu 1500
+
+# ---------- VLAN 373 (untagged): Sample native network ----------
+auto br373
+iface br373 inet static
+    bridge_ports bond8
+    bridge_stp off
+    bridge_fd 0
+    mtu 1500
+    address 203.0.113.130
+    netmask 255.255.255.248
+    post-up ip route replace 203.0.113.128/29 dev br373 scope link src 203.0.113.130 table tabel373
+    post-up ip route replace default via 203.0.113.129 dev br373 table tabel373
+    post-up ip rule del pref 10373 from 203.0.113.130/32 lookup tabel373 2>/dev/null || true
+    post-up ip rule add pref 10373 from 203.0.113.130/32 lookup tabel373
+    pre-down ip rule del pref 10373 from 203.0.113.130/32 lookup tabel373 2>/dev/null || true
+    pre-down ip route del default via 203.0.113.129 dev br373 table tabel373 2>/dev/null || true
+    pre-down ip route del 203.0.113.128/29 dev br373 table tabel373 2>/dev/null || true
